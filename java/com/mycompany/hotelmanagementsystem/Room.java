@@ -1,10 +1,5 @@
 package com.mycompany.hotelmanagementsystem;
 
-/**
- * Room - abstract base class for every room in the hotel.
- * ABSTRACTION: subclasses must define their own type, amenities and pricing.
- * ENCAPSULATION: all fields are private and exposed only through getters.
- */
 public abstract class Room {
 
     private final int roomNumber;
@@ -29,13 +24,13 @@ public abstract class Room {
         return capacity;
     }
 
-    /** Name of the room category (e.g. "Standard"). */
+
     public abstract String getRoomType();
 
-    /** Short description of what the room includes. */
+
     public abstract String getAmenities();
 
-    /** Total cost for a stay; each room type applies its own pricing rule. */
+
     public abstract double calculateTotal(int nights);
 
     @Override
@@ -45,7 +40,7 @@ public abstract class Room {
     }
 }
 
-/** INHERITANCE: Standard room - plain rate x nights. */
+
 class StandardRoom extends Room {
 
     StandardRoom(int roomNumber, double ratePerNight, int capacity) {
@@ -68,7 +63,7 @@ class StandardRoom extends Room {
     }
 }
 
-/** INHERITANCE: Deluxe room - adds a 5% service charge. */
+
 class DeluxeRoom extends Room {
 
     DeluxeRoom(int roomNumber, double ratePerNight, int capacity) {
@@ -87,11 +82,11 @@ class DeluxeRoom extends Room {
 
     @Override
     public double calculateTotal(int nights) {
-        return getRatePerNight() * nights * 1.05; // 5% service charge
+        return getRatePerNight() * nights * 1.05; 
     }
 }
 
-/** INHERITANCE: Suite - flat concierge fee, 10% off for stays of 5+ nights. */
+
 class SuiteRoom extends Room {
 
     private static final double CONCIERGE_FEE = 500;
@@ -114,7 +109,7 @@ class SuiteRoom extends Room {
     public double calculateTotal(int nights) {
         double subtotal = getRatePerNight() * nights;
         if (nights >= 5) {
-            subtotal *= 0.90; // long-stay discount
+            subtotal *= 0.90;
         }
         return subtotal + CONCIERGE_FEE;
     }
