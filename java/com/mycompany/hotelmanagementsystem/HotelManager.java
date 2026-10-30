@@ -5,18 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * HotelManager - the "brain" of the system.
- * Holds all rooms and reservations and enforces the booking rules,
- * keeping business logic separate from the GUI (separation of concerns).
- */
 public class HotelManager {
 
     private final List<Room> rooms = new ArrayList<>();
     private final List<Reservation> reservations = new ArrayList<>();
 
     public HotelManager() {
-        // POLYMORPHISM: different Room subclasses stored in one List<Room>
+ 
         rooms.add(new StandardRoom(101, 1800, 2));
         rooms.add(new StandardRoom(102, 1800, 2));
         rooms.add(new StandardRoom(103, 2000, 3));
@@ -27,7 +22,7 @@ public class HotelManager {
         rooms.add(new SuiteRoom(302, 8000, 6));
     }
 
-    /** Read-only views so outside classes cannot modify the lists directly. */
+
     public List<Room> getRooms() {
         return Collections.unmodifiableList(rooms);
     }
@@ -36,7 +31,7 @@ public class HotelManager {
         return Collections.unmodifiableList(reservations);
     }
 
-    /** Checks that no existing reservation overlaps the requested dates. */
+
     public boolean isAvailable(Room room, LocalDate checkIn, int nights) {
         LocalDate checkOut = checkIn.plusDays(nights);
         for (Reservation r : reservations) {
@@ -47,12 +42,7 @@ public class HotelManager {
         return true;
     }
 
-    /**
-     * Validates the input and creates a reservation.
-     *
-     * @throws IllegalArgumentException when an input is invalid
-     * @throws IllegalStateException    when the room is already taken
-     */
+
     public Reservation book(String guestName, String contact, Room room,
                             LocalDate checkIn, int nights) {
         if (guestName == null || guestName.trim().isEmpty()) {
@@ -78,7 +68,6 @@ public class HotelManager {
         return reservation;
     }
 
-    /** Number of rooms that are free tonight (used by the dashboard). */
     public int countAvailableToday() {
         int free = 0;
         for (Room room : rooms) {
@@ -89,7 +78,7 @@ public class HotelManager {
         return free;
     }
 
-    /** Sum of all active reservation totals (used by the dashboard). */
+
     public double getTotalRevenue() {
         double sum = 0;
         for (Reservation r : reservations) {
@@ -98,7 +87,7 @@ public class HotelManager {
         return sum;
     }
 
-    /** Removes a reservation by ID. Returns true if something was cancelled. */
+
     public boolean cancel(int reservationId) {
         return reservations.removeIf(r -> r.getId() == reservationId);
     }
