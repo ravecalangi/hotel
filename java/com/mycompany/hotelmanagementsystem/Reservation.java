@@ -4,16 +4,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-/**
- * Reservation - stores the details of one booking.
- * ENCAPSULATION: private final fields, read-only access through getters.
- */
 public class Reservation {
 
     private static final DateTimeFormatter SHORT_DATE = DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH);
     private static final DateTimeFormatter LONG_DATE = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH);
 
-    private static int idCounter = 1000; // auto-incrementing reservation number
+    private static int idCounter = 1000; 
 
     private final int id;
     private final String guestName;
@@ -32,7 +28,7 @@ public class Reservation {
         this.checkIn = checkIn;
         this.nights = nights;
         this.checkOut = checkIn.plusDays(nights);
-        this.totalCost = room.calculateTotal(nights); // polymorphic call
+        this.totalCost = room.calculateTotal(nights);
     }
 
     public int getId() {
@@ -67,24 +63,19 @@ public class Reservation {
         return totalCost;
     }
 
-    /**
-     * True if this reservation occupies the given room during [in, out).
-     * The check-out day is free, so back-to-back stays are allowed.
-     */
+
     public boolean conflictsWith(Room other, LocalDate in, LocalDate out) {
         return room.getRoomNumber() == other.getRoomNumber()
                 && in.isBefore(checkOut)
                 && out.isAfter(checkIn);
     }
 
-    // ---- Display helpers used by the GUI ----
 
-    /** Short reference such as "#1001". */
     public String getReference() {
         return "#" + id;
     }
 
-    /** Stay range such as "Dec 24 - Dec 26, 2026". */
+
     public String getStayLabel() {
         return checkIn.format(SHORT_DATE) + " - " + checkOut.format(LONG_DATE);
     }
@@ -97,7 +88,7 @@ public class Reservation {
         return checkOut.format(LONG_DATE);
     }
 
-    /** "1 night" or "3 nights". */
+
     public String getNightsLabel() {
         return nights + (nights == 1 ? " night" : " nights");
     }
