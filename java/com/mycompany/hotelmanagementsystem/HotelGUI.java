@@ -34,17 +34,9 @@ import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-/**
- * HotelGUI - the AWT user interface (extends Frame).
- * Two screens switched with a CardLayout:
- *   "landing" - welcome page with the room categories
- *   "app"     - booking form, dashboard figures and the reservation table
- * Plain AWT components look dated, so a few small custom-painted components
- * (FlatButton, Card, ReservationTable) are included at the bottom of this file.
- */
 public class HotelGUI extends Frame {
 
-    // ---- Palette: neutrals + one accent colour ----
+ 
     private static final Color BG = new Color(250, 250, 251);
     private static final Color TEXT = new Color(31, 41, 51);
     private static final Color MUTED = new Color(107, 114, 128);
@@ -55,17 +47,17 @@ public class HotelGUI extends Frame {
     private static final Color ACCENT_HOVER = new Color(17, 134, 139);
     private static final Color ACCENT_DARK = new Color(10, 91, 94);
 
-    // ---- Typography: Segoe UI / Georgia when installed, logical fonts otherwise ----
+
     private static final String SANS = pickFamily("Segoe UI", "SansSerif");
     private static final String SERIF = pickFamily("Georgia", "Serif");
 
     private final HotelManager manager;
 
-    // Screen switcher
+
     private final CardLayout cardLayout = new CardLayout();
     private final Panel cards = new Panel(cardLayout);
 
-    // Form components
+ 
     private final TextField nameField = new TextField();
     private final TextField contactField = new TextField();
     private final Choice roomChoice = new Choice();
@@ -73,7 +65,7 @@ public class HotelGUI extends Frame {
     private final TextField nightsField = new TextField("1");
     private final Label totalLabel = new Label("-");
 
-    // Dashboard + table
+ 
     private final Label reservationsStat = new Label("0");
     private final Label freeStat = new Label("0");
     private final Label revenueStat = new Label("0");
@@ -91,14 +83,13 @@ public class HotelGUI extends Frame {
         cards.add(buildLanding(), "landing");
         cards.add(buildApp(), "app");
         add(cards, BorderLayout.CENTER);
-        cardLayout.show(cards, "landing"); // start on the home screen
+        cardLayout.show(cards, "landing");
 
-        // Fill the room dropdown from the manager's rooms
         for (Room room : manager.getRooms()) {
             roomChoice.add(room.toString());
         }
 
-        // Live total preview
+     
         roomChoice.addItemListener(e -> updateTotal());
         nightsField.addTextListener(e -> updateTotal());
         updateTotal();
@@ -116,14 +107,11 @@ public class HotelGUI extends Frame {
         setLocationRelativeTo(null);
     }
 
-    // =====================================================================
-    //  LANDING SCREEN
-    // =====================================================================
 
     private Panel buildLanding() {
         Page page = new Page(new BorderLayout(0, 34), new Insets(34, 72, 26, 72));
 
-        // Hero: brand, headline, tagline and the main call to action
+
         Panel hero = new Panel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
@@ -146,17 +134,17 @@ public class HotelGUI extends Frame {
                 () -> cardLayout.show(cards, "app")), c);
         page.add(hero, BorderLayout.NORTH);
 
-        // One tile per room category, built from the Room objects
+  
         Panel tiles = new Panel(new GridLayout(1, 0, 16, 0));
         String lastType = "";
         for (Room room : manager.getRooms()) {
             if (room.getRoomType().equals(lastType)) {
-                continue; // rooms are grouped by type; show each type once
+                continue; 
             }
             lastType = room.getRoomType();
             tiles.add(buildRoomTile(room));
         }
-        // Centre the tiles in the space between the hero and the footer
+       
         Panel tilesWrap = new Panel(new GridBagLayout());
         GridBagConstraints tc = new GridBagConstraints();
         tc.weightx = 1;
@@ -169,7 +157,7 @@ public class HotelGUI extends Frame {
         return page;
     }
 
-    /** One room-category tile; uses polymorphic getRoomType() / getAmenities(). */
+
     private Panel buildRoomTile(Room room) {
         Card tile = new Card(new BorderLayout(0, 16), 24, 0);
 
@@ -183,7 +171,7 @@ public class HotelGUI extends Frame {
             String shown = perk.substring(0, 1).toUpperCase() + perk.substring(1);
             perks.add(label(shown, sans(Font.PLAIN, 13), MUTED));
         }
-        Panel perksTop = new Panel(new BorderLayout()); // keeps rows tightly stacked at the top
+        Panel perksTop = new Panel(new BorderLayout()); 
         perksTop.add(perks, BorderLayout.NORTH);
 
         tile.add(top, BorderLayout.NORTH);
@@ -191,9 +179,7 @@ public class HotelGUI extends Frame {
         return tile;
     }
 
-    // =====================================================================
-    //  BOOKING SCREEN
-    // =====================================================================
+
 
     private Panel buildApp() {
         Page root = new Page(new BorderLayout(28, 20), new Insets(26, 36, 22, 36));
@@ -275,7 +261,7 @@ public class HotelGUI extends Frame {
             setStatus("Form cleared.");
         }), c);
 
-        // Keep the card from stretching to the full window height
+    
         Panel wrap = new Panel(new BorderLayout());
         wrap.add(card, BorderLayout.NORTH);
         return wrap;
@@ -284,24 +270,24 @@ public class HotelGUI extends Frame {
     private Panel buildDashboard() {
         Panel dash = new Panel(new BorderLayout(0, 16));
 
-        // Three quiet figures at the top
+ 
         Panel stats = new Panel(new GridLayout(1, 3, 14, 0));
         stats.add(statCard("Reservations", reservationsStat));
         stats.add(statCard("Rooms free tonight", freeStat));
         stats.add(statCard("Booked revenue", revenueStat));
         dash.add(stats, BorderLayout.NORTH);
 
-        // Table card: fixed header + scrollable rows
+    
         Card tableCard = new Card(new BorderLayout(), 1, 0);
         tableCard.add(table.createHeader(), BorderLayout.NORTH);
         ScrollPane scroll = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
         scroll.setBackground(Color.WHITE);
         scroll.add(table);
         tableCard.add(scroll, BorderLayout.CENTER);
-        table.setOnOpen(this::handleDetails); // double-click opens details
+        table.setOnOpen(this::handleDetails); 
         dash.add(tableCard, BorderLayout.CENTER);
 
-        // Actions + status line
+  
         Panel buttons = new Panel(new GridLayout(1, 2, 10, 0));
         buttons.add(new FlatButton("View details", FlatButton.SECONDARY, 22, this::handleDetails));
         buttons.add(new FlatButton("Cancel reservation", FlatButton.SECONDARY, 22, this::handleCancel));
@@ -324,7 +310,7 @@ public class HotelGUI extends Frame {
         return card;
     }
 
-    /** A small grey caption above an input. */
+
     private Panel fieldBlock(String caption, Component field) {
         Panel block = new Panel(new BorderLayout(0, 5));
         block.add(label(caption, sans(Font.PLAIN, 12), MUTED), BorderLayout.NORTH);
@@ -338,9 +324,6 @@ public class HotelGUI extends Frame {
         field.setForeground(TEXT);
     }
 
-    // =====================================================================
-    //  EVENT HANDLERS
-    // =====================================================================
 
     private void handleBook() {
         try {
@@ -380,7 +363,7 @@ public class HotelGUI extends Frame {
                 "Guest: " + r.getGuestName() + "\n"
                 + "Contact: " + r.getContact() + "\n"
                 + "Room: " + room.getRoomNumber() + " (" + room.getRoomType() + ")\n"
-                + "Includes: " + room.getAmenities() + "\n" // polymorphic call
+                + "Includes: " + room.getAmenities() + "\n" 
                 + "Check-in: " + r.getCheckInLabel() + "\n"
                 + "Check-out: " + r.getCheckOutLabel() + "\n"
                 + "Nights: " + r.getNights() + "\n"
@@ -402,11 +385,8 @@ public class HotelGUI extends Frame {
         }
     }
 
-    // =====================================================================
-    //  HELPERS
-    // =====================================================================
 
-    /** Returns the reservation highlighted in the table, or warns if none. */
+
     private Reservation getSelectedReservation() {
         int index = table.getSelectedIndex();
         if (index < 0) {
@@ -416,7 +396,7 @@ public class HotelGUI extends Frame {
         return manager.getReservations().get(index);
     }
 
-    /** Reloads the table and the three dashboard figures. */
+
     private void refreshAll() {
         table.setRows(manager.getReservations());
         reservationsStat.setText(String.valueOf(manager.getReservations().size()));
@@ -433,7 +413,7 @@ public class HotelGUI extends Frame {
         updateTotal();
     }
 
-    /** Recomputes the price preview using the selected room's own pricing rule. */
+ 
     private void updateTotal() {
         try {
             int nights = Integer.parseInt(nightsField.getText().trim());
@@ -453,12 +433,7 @@ public class HotelGUI extends Frame {
         statusLabel.setText(message);
     }
 
-    /**
-     * Shows a modal AWT Dialog. Lines written as "Key: value" are laid out as two columns.
-     *
-     * @param backText text of the secondary button, or null for a single-button dialog
-     * @return true if the primary button was pressed
-     */
+
     private boolean showDialog(String title, String message, String okText, String backText) {
         final boolean[] result = {false};
         final Dialog dialog = new Dialog(this, title, true);
@@ -528,11 +503,11 @@ public class HotelGUI extends Frame {
 
         dialog.pack();
         dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true); // blocks until the dialog is closed
+        dialog.setVisible(true);
         return result[0];
     }
 
-    // ---- Small static helpers shared by the UI code ----
+
 
     private static String pickFamily(String preferred, String fallback) {
         for (String family : GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()) {
@@ -558,7 +533,7 @@ public class HotelGUI extends Frame {
         return l;
     }
 
-    /** A 1-pixel horizontal divider line. */
+
     private static Panel rule() {
         Panel p = new Panel() {
             @Override
@@ -577,11 +552,7 @@ public class HotelGUI extends Frame {
         return g2;
     }
 
-    // =====================================================================
-    //  CUSTOM COMPONENTS (nested, so the project stays at 5 files)
-    // =====================================================================
 
-    /** A panel with inner padding and a transparent background. */
     private static class Page extends Panel {
         private final Insets padding;
 
@@ -596,7 +567,7 @@ public class HotelGUI extends Frame {
         }
     }
 
-    /** A white panel with a thin border; optional fixed width. */
+
     private static class Card extends Panel {
         private final int pad;
         private final int fixedWidth;
@@ -630,7 +601,7 @@ public class HotelGUI extends Frame {
         }
     }
 
-    /** A flat, rounded button with hover and pressed states. */
+  
     private static class FlatButton extends Canvas {
         static final int PRIMARY = 0;
         static final int SECONDARY = 1;
@@ -690,7 +661,7 @@ public class HotelGUI extends Frame {
 
         @Override
         public void update(Graphics g) {
-            paint(g); // skip the default clear to avoid flicker
+            paint(g); 
         }
 
         @Override
@@ -733,7 +704,7 @@ public class HotelGUI extends Frame {
         }
     }
 
-    /** Custom-painted reservation table: two-line rows, hover and selection tint. */
+
     private static class ReservationTable extends Canvas {
         private static final int ROW_H = 60;
         private static final int PAD = 24;
@@ -789,12 +760,12 @@ public class HotelGUI extends Frame {
             hover = -1;
             invalidate();
             if (getParent() != null) {
-                getParent().validate(); // resize inside the ScrollPane
+                getParent().validate();
             }
             repaint();
         }
 
-        // Column positions shared by the header and the rows
+   
         private static int colRoom(int w) {
             return (int) (w * 0.36);
         }
@@ -858,7 +829,7 @@ public class HotelGUI extends Frame {
                 int guestMax = colRoom(w) - PAD - 16;
                 int roomMax = colStay(w) - colRoom(w) - 16;
 
-                // Guest
+            
                 g.setFont(main);
                 g.setColor(TEXT);
                 g.drawString(fit(g.getFontMetrics(), r.getGuestName(), guestMax), PAD, base1);
@@ -867,7 +838,7 @@ public class HotelGUI extends Frame {
                 g.drawString(fit(g.getFontMetrics(), r.getReference() + "   " + r.getContact(), guestMax),
                         PAD, base2);
 
-                // Room
+               
                 g.setFont(main);
                 g.setColor(TEXT);
                 g.drawString("Room " + r.getRoom().getRoomNumber(), colRoom(w), base1);
@@ -875,7 +846,7 @@ public class HotelGUI extends Frame {
                 g.setColor(MUTED);
                 g.drawString(fit(g.getFontMetrics(), r.getRoom().getRoomType(), roomMax), colRoom(w), base2);
 
-                // Stay
+           
                 g.setFont(main);
                 g.setColor(TEXT);
                 g.drawString(r.getStayLabel(), colStay(w), base1);
@@ -883,7 +854,7 @@ public class HotelGUI extends Frame {
                 g.setColor(MUTED);
                 g.drawString(r.getNightsLabel(), colStay(w), base2);
 
-                // Total (right aligned)
+          
                 String total = String.format("PHP %,.2f", r.getTotalCost());
                 g.setFont(bold);
                 g.setColor(TEXT);
@@ -894,7 +865,7 @@ public class HotelGUI extends Frame {
             }
         }
 
-        /** Header strip drawn above the scrolling rows so it stays visible. */
+
         Canvas createHeader() {
             return new Canvas() {
                 {
